@@ -1,6 +1,6 @@
 #include <stdio.h>
-//MEM stores all the instructions read from file
-static unsigned long int MEM[1000];
+//program_sequence stores all the instructions read from file
+static unsigned long int program_sequence[1000];
 //address is for storing address temporarily while reading from file
 static unsigned int address;
 //instruction is for storing instruction temporarily while reading from file
@@ -27,9 +27,9 @@ static unsigned int Operand2;
 //Destination is the index of the register in which the result of execution is stored
 static unsigned int Destination;
 //R acts as registers for ARMSIM
-static unsigned int R[16];
+static unsigned int reg[16];
 //result stores the intermediate result obtained after EXECUTE stage
-static unsigned int result;
+static unsigned int final_value;
 static unsigned int stored_value;
 static unsigned int Z;
 static unsigned int N;
@@ -48,7 +48,7 @@ void ReadFromFile() {
   }
 	int ct=0;
 	while(fscanf(fp,"%x %x",&address,&instruction)!=EOF){
-		MEM[address]=instruction;
+		program_sequence[address]=instruction;
 	}
 	
 	fclose(fp);
@@ -58,7 +58,7 @@ void Fetch() {
 	//FETCH stage: gets the next instruction to be executed using program counter as the index 
 	//increments the program counter to point to the next instruction
 	current_address=PC;
-	current_instruction=MEM[PC];
+	current_instruction=program_sequence[PC];
 	printf("%s%x %s%x \n","FETCH: Fetching instruction 0x",current_instruction," from address 0x",current_address);
 	PC+=4;
 }
@@ -114,31 +114,31 @@ void Decode() {
 		if(Immediate==0){
         
 			if(Opcode==0) {
-			  printf("DECODE: Operation is AND, First Operand is R%d, Second Operand is R%d, Destination register is R%d.\nRead Rs: R%d = %d, R%d = %d\n",Operand1,Operand2,Destination,Operand1,R[Operand1],Operand2,R[Operand2]);
+			  printf("DECODE: Operation is AND, First Operand is R%d, Second Operand is R%d, Destination register is R%d.\nRead Rs: R%d = %d, R%d = %d\n",Operand1,Operand2,Destination,Operand1,reg[Operand1],Operand2,reg[Operand2]);
 			}
 			else if(Opcode==1) {
-				printf("DECODE: Operation is XOR, First Operand is R%d, Second Operand is R%d, Destination register is R%d.\nRead Rs: R%d = %d, R%d = %d\n",Operand1,Operand2,Destination,Operand1,R[Operand1],Operand2,R[Operand2]);
+				printf("DECODE: Operation is XOR, First Operand is R%d, Second Operand is R%d, Destination register is R%d.\nRead Rs: R%d = %d, R%d = %d\n",Operand1,Operand2,Destination,Operand1,reg[Operand1],Operand2,reg[Operand2]);
 			}
 			else if(Opcode==2) {
-				printf("DECODE: Operation is SUB, First Operand is R%d, Second Operand is R%d, Destination register is R%d.\nRead Rs: R%d = %d, R%d = %d\n",Operand1,Operand2,Destination,Operand1,R[Operand1],Operand2,R[Operand2]);
+				printf("DECODE: Operation is SUB, First Operand is R%d, Second Operand is R%d, Destination register is R%d.\nRead Rs: R%d = %d, R%d = %d\n",Operand1,Operand2,Destination,Operand1,reg[Operand1],Operand2,reg[Operand2]);
 			}
 			else if(Opcode==4) {
-				printf("DECODE: Operation is ADD, First Operand is R%d, Second Operand is R%d, Destination register is R%d.\nRead Rs: R%d = %d, R%d = %d\n",Operand1,Operand2,Destination,Operand1,R[Operand1],Operand2,R[Operand2]);
+				printf("DECODE: Operation is ADD, First Operand is R%d, Second Operand is R%d, Destination register is R%d.\nRead Rs: R%d = %d, R%d = %d\n",Operand1,Operand2,Destination,Operand1,reg[Operand1],Operand2,reg[Operand2]);
 			}
 			else if(Opcode==5) {
-				printf("DECODE: Operation is ADC, First Operand is R%d, Second Operand is R%d, Destination register is R%d.\nRead Rs: R%d = %d, R%d = %d\n",Operand1,Operand2,Destination,Operand1,R[Operand1],Operand2,R[Operand2]);
+				printf("DECODE: Operation is ADC, First Operand is R%d, Second Operand is R%d, Destination register is R%d.\nRead Rs: R%d = %d, R%d = %d\n",Operand1,Operand2,Destination,Operand1,reg[Operand1],Operand2,reg[Operand2]);
 			}
 			else if(Opcode==10) {
-				printf("DECODE: Operation is CMP, First Operand is R%d, Second Operand is R%d, Destination register is R%d.\nRead Rs: R%d = %d, R%d = %d\n",Operand1,Operand2,Destination,Operand1,R[Operand1],Operand2,R[Operand2]);
+				printf("DECODE: Operation is CMP, First Operand is R%d, Second Operand is R%d, Destination register is R%d.\nRead Rs: R%d = %d, R%d = %d\n",Operand1,Operand2,Destination,Operand1,reg[Operand1],Operand2,reg[Operand2]);
 			}
 			else if(Opcode==12) {
-				printf("DECODE: Operation is ORR, First Operand is R%d, Second Operand is R%d, Destination register is R%d.\nRead Rs: R%d = %d, R%d = %d\n",Operand1,Operand2,Destination,Operand1,R[Operand1],Operand2,R[Operand2]);
+				printf("DECODE: Operation is ORR, First Operand is R%d, Second Operand is R%d, Destination register is R%d.\nRead Rs: R%d = %d, R%d = %d\n",Operand1,Operand2,Destination,Operand1,reg[Operand1],Operand2,reg[Operand2]);
 			}
 			else if(Opcode==13) {
-				printf("DECODE: Operation is MOV, First Operand is R%d, Second Operand is R%d, Destination register is R%d.\nRead Rs: R%d = %d, R%d = %d\n",Operand1,Operand2,Destination,Operand1,R[Operand1],Operand2,R[Operand2]);
+				printf("DECODE: Operation is MOV, First Operand is R%d, Second Operand is R%d, Destination register is R%d.\nRead Rs: R%d = %d, R%d = %d\n",Operand1,Operand2,Destination,Operand1,reg[Operand1],Operand2,reg[Operand2]);
 			}
 			else if(Opcode==15) {
-				printf("DECODE: Operation is MNV, First Operand is R%d, Second Operand is R%d, Destination register is R%d.\nRead Rs: R%d = %d, R%d = %d\n",Operand1,Operand2,Destination,Operand1,R[Operand1],Operand2,R[Operand2]);
+				printf("DECODE: Operation is MVN, First Operand is R%d, Second Operand is R%d, Destination register is R%d.\nRead Rs: R%d = %d, R%d = %d\n",Operand1,Operand2,Destination,Operand1,reg[Operand1],Operand2,reg[Operand2]);
 			}
 
       }
@@ -146,31 +146,31 @@ void Decode() {
       else if(Immediate==1){
         
         if(Opcode==0) {
-			  printf("DECODE: Operation is AND, First Operand is R%d, Immediate Second Operand is %d, Destination register is R%d.\nRead Rs: R%d = %d\n",Operand1,Operand2,Destination,Operand1,R[Operand1]);
+			  printf("DECODE: Operation is AND, First Operand is R%d, Immediate Second Operand is %d, Destination register is R%d.\nRead Rs: R%d = %d\n",Operand1,Operand2,Destination,Operand1,reg[Operand1]);
 			}
 			else if(Opcode==1) {
-				printf("DECODE: Operation is XOR, First Operand is R%d, Immediate Second Operand is %d, Destination register is R%d.\nRead Rs: R%d = %d\n",Operand1,Operand2,Destination,Operand1,R[Operand1]);
+				printf("DECODE: Operation is XOR, First Operand is R%d, Immediate Second Operand is %d, Destination register is R%d.\nRead Rs: R%d = %d\n",Operand1,Operand2,Destination,Operand1,reg[Operand1]);
 			}
 			else if(Opcode==2) {
-				printf("DECODE: Operation is SUB, First Operand is R%d, Immediate Second Operand is %d, Destination register is R%d.\nRead Rs: R%d = %d\n",Operand1,Operand2,Destination,Operand1,R[Operand1]);
+				printf("DECODE: Operation is SUB, First Operand is R%d, Immediate Second Operand is %d, Destination register is R%d.\nRead Rs: R%d = %d\n",Operand1,Operand2,Destination,Operand1,reg[Operand1]);
 			}
 			else if(Opcode==4) {
-				printf("DECODE: Operation is ADD, First Operand is R%d, Immediate Second Operand is %d, Destination register is R%d.\nRead Rs: R%d = %d\n",Operand1,Operand2,Destination,Operand1,R[Operand1]);
+				printf("DECODE: Operation is ADD, First Operand is R%d, Immediate Second Operand is %d, Destination register is R%d.\nRead Rs: R%d = %d\n",Operand1,Operand2,Destination,Operand1,reg[Operand1]);
 			}
 			else if(Opcode==5) {
-				printf("DECODE: Operation is ADC, First Operand is R%d, Immediate Second Operand is %d, Destination register is R%d.\nRead Rs: R%d = %d\n",Operand1,Operand2,Destination,Operand1,R[Operand1]);
+				printf("DECODE: Operation is ADC, First Operand is R%d, Immediate Second Operand is %d, Destination register is R%d.\nRead Rs: R%d = %d\n",Operand1,Operand2,Destination,Operand1,reg[Operand1]);
 			}
 			else if(Opcode==10) {
-				printf("DECODE: Operation is CMP, First Operand is R%d, Immediate Second Operand is %d, Destination register is R%d.\nRead Rs: R%d = %d\n",Operand1,Operand2,Destination,Operand1,R[Operand1]);
+				printf("DECODE: Operation is CMP, First Operand is R%d, Immediate Second Operand is %d, Destination register is R%d.\nRead Rs: R%d = %d\n",Operand1,Operand2,Destination,Operand1,reg[Operand1]);
 			}
 			else if(Opcode==12) {
-				printf("DECODE: Operation is ORR,First Operand is R%d, Immediate Second Operand is %d, Destination register is R%d.\nRead Rs: R%d = %d\n",Operand1,Operand2,Destination,Operand1,R[Operand1]);
+				printf("DECODE: Operation is ORR,First Operand is R%d, Immediate Second Operand is %d, Destination register is R%d.\nRead Rs: R%d = %d\n",Operand1,Operand2,Destination,Operand1,reg[Operand1]);
 			}
 			else if(Opcode==13) {
-				printf("DECODE: Operation is MOV,First Operand is R%d, Immediate Second Operand is %d, Destination register is R%d.\nRead Rs: R%d = %d\n",Operand1,Operand2,Destination,Operand1,R[Operand1]);
+				printf("DECODE: Operation is MOV,First Operand is R%d, Immediate Second Operand is %d, Destination register is R%d.\nRead Rs: R%d = %d\n",Operand1,Operand2,Destination,Operand1,reg[Operand1]);
 			}
 			else if(Opcode==15) {
-				printf("DECODE: Operation is MNV, First Operand is R%d, Immediate Second Operand is %d, Destination register is R%d.\nRead Rs: R%d = %d\n",Operand1,Operand2,Destination,Operand1,R[Operand1]);
+				printf("DECODE: Operation is MVN, First Operand is R%d, Immediate Second Operand is %d, Destination register is R%d.\nRead Rs: R%d = %d\n",Operand1,Operand2,Destination,Operand1,reg[Operand1]);
 			}
 
       }
@@ -184,7 +184,7 @@ void Decode() {
       }
       else if(Opcode==24)
       {
-        printf("DECODE: Operation is STR, Base Register is R%d, Offset is %d, Register to be stored in memory is R%d.\nRead Register: R%d = %d\n",Operand1,Operand2,Destination,Destination,R[Destination]);
+        printf("DECODE: Operation is STR, Base Register is R%d, Offset is %d, Register to be stored in memory is R%d.\nRead Register: R%d = %d\n",Operand1,Operand2,Destination,Destination,reg[Destination]);
       }
   }
   else if(Flag==2)
@@ -222,13 +222,13 @@ void Add(){
 	//if Immediate bit is high, then one of the operands is directly taken from the instruction
 	if(Immediate==0) 
 	{
-		printf("EXECUTE: ADD %d and %d\n",R[Operand1],R[Operand2]);
-		result=R[Operand1]+R[Operand2];
+		printf("EXECUTE: ADD %d and %d\n",reg[Operand1],reg[Operand2]);
+		final_val=reg[Operand1]+reg[Operand2];
 	}
 	else 
 	{
-		printf("EXECUTE: ADD %d and %d\n",R[Operand1],Operand2);
-		result=R[Operand1]+Operand2;}
+		printf("EXECUTE: ADD %d and %d\n",reg[Operand1],Operand2);
+		final_val=reg[Operand1]+Operand2;}
 }	
 void Adc(){
 	//EXECUTE stage
@@ -236,13 +236,13 @@ void Adc(){
 	//if Immediate bit is high, then one of the operands is directly taken from the instruction
 	if(Immediate==0) 
 	{
-		printf("EXECUTE: ADD WITH CARRY %d and %d\n",R[Operand1],R[Operand2]);
-		result=R[Operand1]+R[Operand2];
+		printf("EXECUTE: ADD WITH CARRY %d and %d\n",reg[Operand1],reg[Operand2]);
+		final_val=reg[Operand1]+reg[Operand2];
 	}
 	else 
 	{
-		printf("EXECUTE: ADD WITH CARRY %d and %d\n",R[Operand1],Operand2);
-		result=R[Operand1]+Operand2;}
+		printf("EXECUTE: ADD WITH CARRY %d and %d\n",reg[Operand1],Operand2);
+		final_val=reg[Operand1]+Operand2;}
 }
 void Sub(){
 	//EXECUTE stage
@@ -250,12 +250,12 @@ void Sub(){
 	//if Immediate bit is high, then one of the operands is directly taken from the instruction
 	if(Immediate==0)
 	{
-		printf("EXECUTE: SUB %d and %d\n",R[Operand1],R[Operand2]);
-		result=R[Operand1]-R[Operand2];}
+		printf("EXECUTE: SUB %d and %d\n",reg[Operand1],reg[Operand2]);
+		final_val=reg[Operand1]-reg[Operand2];}
 	else 
 	{
-		printf("EXECUTE: SUB %d and %d\n",R[Operand1],Operand2);
-		result=R[Operand1]-Operand2;
+		printf("EXECUTE: SUB %d and %d\n",reg[Operand1],Operand2);
+		final_val=reg[Operand1]-Operand2;
 		}
 }
 void Mov(){
@@ -264,11 +264,11 @@ void Mov(){
 	//if Immediate bit is high, then one of the operands is directly taken from the instruction
 	if(Immediate==0) {
 		printf("EXECUTE: MOV value of R%d in R%d\n,",Operand2,Destination);
-		result=R[Operand2];
+		final_val=reg[Operand2];
 	}
 	else {
 		printf("EXECUTE: MOV %d in R%d\n",Operand2,Destination);
-		result=Operand2;
+		final_val=Operand2;
 	}
 }
 void Mvn(){
@@ -277,11 +277,11 @@ void Mvn(){
 	//if Immediate bit is high, then one of the operands is directly taken from the instruction
 	if(Immediate==0) {
 		printf("EXECUTE: MVN NOT of this R%d in R%d\n",Operand2,Destination);
-		result=~R[Operand2];
+		final_val=~reg[Operand2];
 	}
 	else {
 		printf("EXECUTE: MVN NOT of %d in R%d\n",Operand2,Destination);
-		result=~Operand2;
+		final_val=~Operand2;
 	}
 }
 
@@ -291,13 +291,13 @@ void And() {
 	//if Immediate bit is high, then one of the operands is directly taken from the instruction
 	if(Immediate==0)
 	{
-		printf("EXECUTE: AND %d and %d\n",R[Operand1],R[Operand2]);
-		result = R[Operand1] & R[Operand2];
+		printf("EXECUTE: AND %d and %d\n",reg[Operand1],reg[Operand2]);
+		final_val = reg[Operand1] & reg[Operand2];
 	}
 	else
 	{
-		printf("EXECUTE: AND %d and %d\n",R[Operand1],Operand2);
-		result = R[Operand1] & Operand2;
+		printf("EXECUTE: AND %d and %d\n",reg[Operand1],Operand2);
+		final_val = reg[Operand1] & Operand2;
 	}
 }
 
@@ -307,15 +307,15 @@ void Or() {
 	//if Immediate bit is high, then one of the operands is directly taken from the instruction
 	if(Immediate==0)
 	{
-		printf("EXECUTE: ORR %d and %d\n",R[Operand1],R[Operand2]);
-		int or = R[Operand1] | R[Operand2];
-		result = or;
+		printf("EXECUTE: ORR %d and %d\n",reg[Operand1],reg[Operand2]);
+		int or = reg[Operand1] | reg[Operand2];
+		final_val = or;
 	}
 	else
 	{
-		printf("EXECUTE: ORR %d and %d\n",R[Operand1],Operand2);
-		int or = R[Operand1] | Operand2;
-		result = or;
+		printf("EXECUTE: ORR %d and %d\n",reg[Operand1],Operand2);
+		int or = reg[Operand1] | Operand2;
+		final_val = or;
 	}
 }
 
@@ -325,15 +325,15 @@ void Xor() {
 	//if Immediate bit is high, then one of the operands is directly taken from the instruction
 	if(Immediate==0)
 	{
-		printf("EXECUTE: XOR %d and %d\n",R[Operand1],R[Operand2]);
-		int xor = R[Operand1] ^ R[Operand2];
-		result = xor;
+		printf("EXECUTE: XOR %d and %d\n",reg[Operand1],reg[Operand2]);
+		int xor = reg[Operand1] ^ reg[Operand2];
+		final_val = xor;
 	}
 	else
 	{
-		printf("EXECUTE: XOR %d and %d\n",R[Operand1],Operand2);
-		int xor = R[Operand1] ^ R[Operand2];
-		result = xor;
+		printf("EXECUTE: XOR %d and %d\n",reg[Operand1],Operand2);
+		int xor = reg[Operand1] ^ Operand2;
+		final_val = xor;
 	}
 }
 
@@ -343,36 +343,36 @@ void Cmp() {
 	//if Immediate bit is high, then one of the operands is directly taken from the instruction
 	if(Immediate==0)
 	{
-		printf("EXECUTE: CMP %d and %d\n",R[Operand1],R[Operand2]);
-          if(R[Operand1] == R[Operand2])
+		printf("EXECUTE: CMP %d and %d\n",reg[Operand1],reg[Operand2]);
+          if(reg[Operand1] == reg[Operand2])
 		  {
-            result = 0;
+            final_val = 0;
             Z=1;
           }
-          else if(R[Operand1] < R[Operand2])
+          else if(reg[Operand1] < reg[Operand2])
 		  {
-            result = -1;
+            final_val = -1;
             N=1;
           }
           else{
-            result = 1;
+            final_val = 1;
           }
 	}
 	else
 	{
-		printf("EXECUTE: CMP %d and %d\n",R[Operand1],Operand2);
-		if(R[Operand1] == Operand2)
+		printf("EXECUTE: CMP %d and %d\n",reg[Operand1],Operand2);
+		if(reg[Operand1] == Operand2)
 		{
-            result = 0;
+            final_val = 0;
             Z=1;
         }
-         else if(R[Operand1] < Operand2)
+         else if(reg[Operand1] < Operand2)
 		{
-            result = -1;
+            final_val = -1;
             N=1;
         }
           else{
-            result = 1;
+            final_val = 1;
         }
 	}
 }
@@ -407,7 +407,7 @@ void Store(){
 	//EXECUTE stage
 	//STR operation: stores the value in a register to a memory location
 	int index=Operand2/4;
-	stored_value=R[Destination];
+	stored_value=reg[Destination];
 	//store value from register to memory location
 	printf("%s%d %s %d\n","EXECUTE: STORE instruction from array R",Operand1," index ",index);
 }
@@ -584,8 +584,8 @@ void WriteBack(){
 			WriteBackForStore();
 		}
 		else {
-			R[Destination]=result;
-			printf("%s %d %s%d\n","WRITEBACK: Store value",result,"in R",Destination);
+			reg[Destination]=final_val;
+			printf("%s %d %s%d\n","WRITEBACK: Store value",final_val,"in R",Destination);
 		}
 	}
 }	
