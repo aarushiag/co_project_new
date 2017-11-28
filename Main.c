@@ -12,7 +12,8 @@ static unsigned int Condition;
 static unsigned int Flag;
 static unsigned int Immediate;
 static unsigned int Opcode;
-static unsigned int Offset;
+static int Offset;
+static int Offset_ext;
 static unsigned int Operand1;
 static unsigned int Operand2;
 static unsigned int Destination;
@@ -33,8 +34,8 @@ void ReadFromFile() {
   }
 	int ct=0;
 	while(fscanf(fp,"%x %x",&address,&instruction)!=EOF){
-		printf("%x",address);
-		printf("%x",instruction);
+		//printf("%x",address);
+		//printf("%x",instruction);
 		MEM[address]=instruction;
 	}
 	
@@ -44,7 +45,7 @@ void ReadFromFile() {
 void Fetch() {
 	current_address=PC;
 	current_instruction=MEM[PC];
-	printf("%s %x %s %x \n","FETCH: Fetching instruction ",current_instruction," from address ",current_address);
+	printf("%s%x %s%x \n","FETCH: Fetching instruction 0x",current_instruction," from address 0x",current_address);
 	PC+=4;
 }
 
@@ -152,7 +153,7 @@ void Decode() {
 				printf("DECODE: Operation is ORR, First Operand is R%d, Second Operand is R%d, Destination register is R%d.\nRead Rs: R%d = %d, R%d = %d\n",Operand1,Operand2,Destination,Operand1,R[Operand1],Operand2,R[Operand2]);
 			}
 			else if(Opcode==13) {
-				printf("DECODE: Operation is MOV, First Operand is R%d, Second Operand is R%d, Destination register is R%d.\nRead Rs: R%d = %d, R%d = %d\n",Operand1,Operand2,Destination,Operand1,R[Operand1],Operand2,R[Operand2]);
+				printf("DECODE: Operation is MOV, First Operand is R%d, Immediate Second Operand is R%d, Destination register is R%d.\nRead Rs: R%d = %d, R%d = %d\n",Operand1,Operand2,Destination,Operand1,R[Operand1],Operand2,R[Operand2]);
 			}
 			else if(Opcode==15) {
 				printf("DECODE: Operation is MNV, First Operand is R%d, Second Operand is R%d, Destination register is R%d.\nRead Rs: R%d = %d, R%d = %d\n",Operand1,Operand2,Destination,Operand1,R[Operand1],Operand2,R[Operand2]);
@@ -324,18 +325,33 @@ void Cmp() {
 	}
 }
 
+void Sign_extend()
+{
+        int addr=(Offset*4);
+
+        if ((Offset >> 23) && 1)
+        {
+            Offset_ext =  ((0xFF000000)|addr);
+        }
+
+        else
+        {
+            Offset_ext =addr;
+        }
+
+}
 
 void Ldr(){
 	int index=Operand2/4;
 	result=array_of_registers[Operand1][index];
 	//load value from memory location to register
-	printf("%s %d %s %d\n","EXECUTE: LOAD instruction from array R",Operand1," index ",index);
+	printf("%s%d %s %d\n","EXECUTE: LOAD instruction from array R",Operand1," index ",index);
 }
 void Store(){
 	int index=Operand2/4;
 	stored_value=R[Destination];
 	//store value from register to memory location
-	printf("%s %d %s %d\n","EXECUTE: STORE instruction from array R",Operand1," index ",index);
+	printf("%s%d %s %d\n","EXECUTE: STORE instruction from array R",Operand1," index ",index);
 }
 
 
@@ -395,11 +411,102 @@ void Execute() {
 			Store();
 		}
 	}
-      
+	 else if (Flag==2)
+    {
+    if(Opcode==2)
+    {
+        Sign_extend();
+        if (Condition==0)
+        {
+             printf("EXECUTE: BEQ offset is: %d\n",Offset);
+             if(Z==1)
+             {
+                 PC=PC-4;
+                 PC=PC+8 + Offset_ext;
+             }
+        }
+
+        else if (Condition==1)
+        {
+             printf("EXECUTE: BNE offset is: %d\n",Offset);
+             if(Z!=1)
+             {
+                PC=PC-4;
+                PC=PC+8 + Offset_ext;
+             }
+        }
+
+        else if(Condition ==11)
+        {
+            printf("EXECUTE: BLT offset is: %d\n",Offset);
+            if((N==1)&&(Z==0))
+            {
+                PC=PC-4;
+                PC=PC+8 + Offset_ext;
+            }
+        }
+
+        else if (Condition == 12)
+        {
+
+          printf("EXECUTE: BGT offset is: %d\n",Offset);
+          if((N==0)&&(Z==0))
+          {
+                PC=PC-4;
+                PC=PC+8 + Offset_ext;
+          }
+
+        }
+
+        else if (Condition == 13)
+        {
+             printf("EXECUTE: BLE offset is: %d\n",Offset);
+             if((N==1)||(Z==1))
+             {
+                PC=PC-4;
+                PC=PC+8 + Offset_ext;
+             }
+        }
+
+        else if (Condition == 14)
+        {
+              printf("EXECUTE: BAL offset is: %d\n",Offset);
+              PC=PC-4;
+              PC=PC+8 + Offset_ext;
+        }
+
+        else if (Condition == 10)
+        {
+             printf("EXECUTE: BGE offset is: %d\n",Offset);
+             if((N==0)||(Z==1))
+             {
+              PC=PC-4;
+              PC=PC+8 + Offset_ext;
+             }
+        }
+
     }
+
+    }
+      
+}
 	
 void Memory() {
-
+	if(Flag==1)
+	{
+		if(Opcode==25)
+		{
+			printf("%s \n","MEMORY: Load value from memory");
+		}
+		else if(Opcode==24)
+		{
+			printf("%s \n","MEMORY: Store value to memory");
+		}
+	}
+	else
+	{
+		printf("%s \n","MEMORY: No Memory Operation");
+	}		
 }
 
 void WriteBackForStore(){
@@ -409,14 +516,16 @@ void WriteBackForStore(){
 }	
 
 void WriteBack(){
-	
-	if(Flag==1 && Opcode == 24)
-	{
-		WriteBackForStore();
-	}
-	else {
-		R[Destination]=result;
-		printf("%s%d\n","WRITEBACK: Store value in R",Destination);
+	if(current_instruction != 0xEF000011) {
+		if(Flag==1 && Opcode == 24)
+		{
+			WriteBackForStore();
+		}
+		else {
+			R[Destination]=result;
+			printf("%d\n",result);
+			printf("%s%d\n","WRITEBACK: Store value in R",Destination);
+		}
 	}
 }
 
@@ -432,5 +541,7 @@ void main() {
 		Execute();
 		Memory();
 		WriteBack();
+		printf("\n");
 	}while(current_instruction != 0xEF000011);
+	printf("%s\n","EXIT:");
 }
