@@ -1,8 +1,11 @@
 #include <stdio.h>
 
-char MEM[1000];
-char address[1000];
-char instruction[1000];
+static unsigned long int MEM[1000];
+static unsigned int address[1000];
+static unsigned int instruction[1000];
+//stores the address and instruction of the current line being read from file
+//used in Fetch function and ReadFromFile function
+static unsigned int current_address,current_instruction;
 int PC=0;
 int flag=0;
 
@@ -17,24 +20,19 @@ void ReadFromFile() {
 		return;
   }
 	int ct=0;
-	while(fscanf(fp,"%s %s",&address,&instruction)!=EOF){
-		
-		printf("%s",address);
-		printf("%s",instruction);
-		ct++;
+	while(fscanf(fp,"%x %x",&address,&instruction)!=EOF){
+		printf("%x",address);
+		printf("%x",instruction);
+		MEM[address]=instruction;
 	}
 	
 	fclose(fp);
 }
 
 void Fetch() {
-	char temp[10];
-	char temp2[4];
-	int i=PC+5;
-	for (i=PC+5;i<PC+14;i++)temp[i-PC]=MEM[i];
-	for (i=PC;i<PC+4;i++)temp2[i-PC]=MEM[i];
-	printf("FETCH Instruction : %s from address: %s",&temp,&temp2); 
-	PC=PC+14;
+	current_address=PC;
+	current_instruction=MEM[PC];
+	PC+=4;
 }
 	
 void main() {
