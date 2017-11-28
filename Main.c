@@ -1,30 +1,44 @@
 #include <stdio.h>
-
+//MEM stores all the instructions read from file
 static unsigned long int MEM[1000];
+//address is for storing address temporarily while reading from file
 static unsigned int address;
+//instruction is for storing instruction temporarily while reading from file
 static unsigned int instruction;
-//stores the address and instruction of the current line being read from file
-//used in Fetch function and ReadFromFile function
+//current_address stores the address of the current address being executed
 static unsigned int current_address;
+//PC is for program counter
 static unsigned int PC=0;
+//current_instruction stores the current instruction being executed 
 static unsigned int current_instruction;
+//Condiiton, Flag, Immediate and Opcode are for identifying the type of instruction and the operation 
+//to be performed on the operands Operand1 and Operand2
 static unsigned int Condition;
 static unsigned int Flag;
 static unsigned int Immediate;
 static unsigned int Opcode;
+//Offset is for storing offset obtained from the instruction
 static int Offset;
+//Offset_ext is for storing offset obtained after sign extension
 static int Offset_ext;
+//Operand1 and Operand2 are operands of the instruction
 static unsigned int Operand1;
 static unsigned int Operand2;
+//Destination is the index of the register in which the result of execution is stored
 static unsigned int Destination;
+//R acts as registers for ARMSIM
 static unsigned int R[16];
+//result stores the intermediate result obtained after EXECUTE stage
 static unsigned int result;
 static unsigned int stored_value;
 static unsigned int Z;
 static unsigned int N;
+//array_of_registers is for simulating memory
 static long int array_of_registers[16][512];
 
 void ReadFromFile() {
+	//FETCH stage
+	//Reads the .MEM file to obtain the instructions required for executing the program
 	FILE *fp;
 	fp=fopen("Input.txt","r");
 	
@@ -34,8 +48,6 @@ void ReadFromFile() {
   }
 	int ct=0;
 	while(fscanf(fp,"%x %x",&address,&instruction)!=EOF){
-		//printf("%x",address);
-		//printf("%x",instruction);
 		MEM[address]=instruction;
 	}
 	
@@ -43,6 +55,8 @@ void ReadFromFile() {
 }
 
 void Fetch() {
+	//FETCH stage: gets the next instruction to be executed using program counter as the index 
+	//increments the program counter to point to the next instruction
 	current_address=PC;
 	current_instruction=MEM[PC];
 	printf("%s%x %s%x \n","FETCH: Fetching instruction 0x",current_instruction," from address 0x",current_address);
@@ -50,16 +64,15 @@ void Fetch() {
 }
 
 void ReadInstruction() {
-	//printf("%x",current_instruction);
+	//DECODE stage
+	//parses the instruction to find the Condition, Flag, Immediate, Opcode and operands 
+	//for the instruction currently being decoded
 	Condition = (current_instruction >> 28) & (0b1111);
-	//printf("%d \n",Condition);
 	Flag = (current_instruction >> 26) & (0b0011);
-	//printf("%d \n",Flag);
 
     if(Flag==0)
     {
         Immediate=(current_instruction >> 25)& (0x1);
-		//printf("%d \n",Immediate);
         Opcode=(current_instruction >> 21)& (0b1111);
         Operand1=(current_instruction >> 16)& (0b1111);
         Destination=(current_instruction >> 12)& (0b1111);
@@ -94,7 +107,7 @@ void ReadInstruction() {
 
 
 void Decode() {
-	//current_instruction= 0xE3A0200A;
+	//DECODE stage: calls the ReadInstruction() to parse the instruction and identify the operation to be performed
 	ReadInstruction();
 	if(Flag==0)
 	{
@@ -204,6 +217,9 @@ void Decode() {
 }
 
 void Add(){
+	//EXECUTE stage
+	//ADD operation: adds the operands stored in registers given in instruction
+	//if Immediate bit is high, then one of the operands is directly taken from the instruction
 	if(Immediate==0) 
 	{
 		printf("EXECUTE: ADD %d and %d\n",R[Operand1],R[Operand2]);
@@ -215,6 +231,9 @@ void Add(){
 		result=R[Operand1]+Operand2;}
 }	
 void Sub(){
+	//EXECUTE stage
+	//SUB operation: subtracts the operands stored in registers given in instruction
+	//if Immediate bit is high, then one of the operands is directly taken from the instruction
 	if(Immediate==0)
 	{
 		printf("EXECUTE: SUB %d and %d\n",R[Operand1],R[Operand2]);
@@ -226,6 +245,9 @@ void Sub(){
 		}
 }
 void Mov(){
+	//EXECUTE stage
+	//MOV operation: moves the value stored in one of operand registers to the other one
+	//if Immediate bit is high, then one of the operands is directly taken from the instruction
 	if(Immediate==0) {
 		printf("EXECUTE: MOV value of R%d in R%d\n,",Operand2,Destination);
 		result=R[Operand2];
@@ -236,6 +258,9 @@ void Mov(){
 	}
 }
 void Mnv(){
+	//EXECUTE stage
+	//MNV operation: moves the bitwise NOT of the value stored in one of operand registers to the other one
+	//if Immediate bit is high, then one of the operands is directly taken from the instruction
 	if(Immediate==0) {
 		printf("EXECUTE: MNV NOT of this R%d in R%d\n",Operand2,Destination);
 		result=~R[Operand2];
@@ -247,6 +272,9 @@ void Mnv(){
 }
 
 void And() {
+	//EXECUTE stage
+	//AND operation: performs bitwise AND on the operands stored in registers given in instruction
+	//if Immediate bit is high, then one of the operands is directly taken from the instruction
 	if(Immediate==0)
 	{
 		printf("EXECUTE: AND %d and %d\n",R[Operand1],R[Operand2]);
@@ -260,6 +288,9 @@ void And() {
 }
 
 void Or() {
+	//EXECUTE stage
+	//OR operation: performs bitwise OR on the operands stored in registers given in instruction
+	//if Immediate bit is high, then one of the operands is directly taken from the instruction
 	if(Immediate==0)
 	{
 		printf("EXECUTE: ORR %d and %d\n",R[Operand1],R[Operand2]);
@@ -275,6 +306,9 @@ void Or() {
 }
 
 void Xor() {
+	//EXECUTE stage
+	//XOR operation: performs bitwise XOR on the operands stored in registers given in instruction
+	//if Immediate bit is high, then one of the operands is directly taken from the instruction
 	if(Immediate==0)
 	{
 		printf("EXECUTE: XOR %d and %d\n",R[Operand1],R[Operand2]);
@@ -290,6 +324,9 @@ void Xor() {
 }
 
 void Cmp() {
+	//EXECUTE stage
+	//CMP operation: performs comparison on the operands stored in registers given in instruction
+	//if Immediate bit is high, then one of the operands is directly taken from the instruction
 	if(Immediate==0)
 	{
 		printf("EXECUTE: CMP %d and %d\n",R[Operand1],R[Operand2]);
@@ -328,7 +365,9 @@ void Cmp() {
 
 void Sign_extend()
 {
-        int addr=(Offset*4);
+        //EXECUTE stage
+	//sign extension is used in branch instructions when the first bit of offset is 1
+	int addr=(Offset*4);
 
         if ((Offset >> 23) && 1)
         {
@@ -343,12 +382,16 @@ void Sign_extend()
 }
 
 void Ldr(){
+	//EXECUTE stage
+	//LDR operation: loads the value stored in a memory location to a register
 	int index=Operand2/4;
 	result=array_of_registers[Operand1][index];
 	//load value from memory location to register
 	printf("%s%d %s %d\n","EXECUTE: LOAD instruction from array R",Operand1," index ",index);
 }
 void Store(){
+	//EXECUTE stage
+	//STR operation: stores the value in a register to a memory location
 	int index=Operand2/4;
 	stored_value=R[Destination];
 	//store value from register to memory location
@@ -358,7 +401,7 @@ void Store(){
 
 
 void Execute() {
-  
+  //EXECUTE stage: calls the appropriate method to perform the required operation on the operation based on opcode
   if(Flag == 0)
   { 
         if(Opcode == 0)
@@ -381,7 +424,6 @@ void Execute() {
         else if(Opcode == 5)
         {
           printf("EXECUTE: ADC %d and %d\n",R[Operand1],R[Operand2]);
-          //WRITE CODE
         }
         else if(Opcode == 10)
         {
@@ -493,6 +535,7 @@ void Execute() {
 }
 	
 void Memory() {
+	//MEMORY stage: to either load a value or store a value from the memory
 	if(Flag==1)
 	{
 		if(Opcode==25)
@@ -511,12 +554,16 @@ void Memory() {
 }
 
 void WriteBackForStore(){
+	//WRITEBACK stage
+	//performs the writeback function for STORE instruction
+	//stores the value in register to desired location in memory
 	int index=Operand2/4;
 	array_of_registers[Operand1][index]=stored_value;
 	printf("%s%d %s %d\n","WRITEBACK: Store value in array R",Operand1," at index ",index);
 }	
 
 void WriteBack(){
+	//WRITEBACK stage: stores the results of the operations performed to registers or to the memory according to the instruction
 	if(current_instruction != 0xEF000011) {
 		if(Flag==1 && Opcode == 24)
 		{
@@ -524,14 +571,13 @@ void WriteBack(){
 		}
 		else {
 			R[Destination]=result;
-			//printf("%d\n",result);
 			printf("%s %d %s%d\n","WRITEBACK: Store value",result,"in R",Destination);
 		}
 	}
 }	
 	
 void main() {
-	
+	//MAIN function to run the program
 	ReadFromFile();
 	
 	do {
