@@ -1,15 +1,26 @@
 #include <stdio.h>
 
 char MEM[1000];
+char address[1000];
+char instruction[1000];
 int PC=0;
+int flag=0;
+
 
 void ReadFromFile() {
 	FILE *fp;
 	fp=fopen("Input.txt","r");
+	
+	if(fp == NULL) {
+		printf("Error opening file for writing\n");
+		flag=-1;
+		return;
+  }
 	int ct=0;
-	while(ct<4){
-		fscanf(fp,"%s","%s",MEM);
-		printf("%s",MEM);
+	while(fscanf(fp,"%s %s",&address,&instruction)!=EOF){
+		
+		printf("%s",address);
+		printf("%s",instruction);
 		ct++;
 	}
 	
@@ -27,10 +38,13 @@ void Fetch() {
 }
 	
 void main() {
+	printf("Hello");
 	ReadFromFile();
 	int ct=0;
+	if (flag==0){
 	while(ct<4){
-		Fetch();
+		//Fetch();
 		ct++;
+	}
 	}
 }
