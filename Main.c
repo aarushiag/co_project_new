@@ -352,16 +352,13 @@ void Execute() {
         else if(Opcode == 1)
         {
           Xor();
-          //WRITE CODE
         }
         else if(Opcode == 2)
         {
-          
           Sub();
         }
         else if(Opcode == 4)
         {
-          
           Add();
         }
         else if(Opcode == 5)
@@ -372,8 +369,6 @@ void Execute() {
         else if(Opcode == 10)
         {
           Cmp();
-		  //WRITE CODE
-          
         }
         else if(Opcode == 12)
         {
@@ -405,24 +400,26 @@ void Execute() {
 	
 void Memory() {
 
+}
+
+void WriteBackForStore(){
+	int index=Operand2/4;
+	array_of_registers[Operand1][index]=stored_value;
+	printf("%s%d %s %d\n","WRITEBACK: Store value in array R",Operand1," at index ",index);
 }	
 
 void WriteBack(){
 	
-	if(Flag==1 && opcode == 24)
+	if(Flag==1 && Opcode == 24)
 	{
 		WriteBackForStore();
 	}
 	else {
 		R[Destination]=result;
-		printf("%s %d\n","WRITEBACK: Store value in R",Destination);
+		printf("%s%d\n","WRITEBACK: Store value in R",Destination);
 	}
 }
-void WriteBackForStore(){
-	int index=Operand2/4;
-	array_of_registers[Operand1][index]=stored_value;
-	printf("%s %d %s %d\n","WRITEBACK: Store value in array R",Operand1," at index ",index);
-}
+
 	
 	
 void main() {
