@@ -230,6 +230,20 @@ void Add(){
 		printf("EXECUTE: ADD %d and %d\n",R[Operand1],Operand2);
 		result=R[Operand1]+Operand2;}
 }	
+void Adc(){
+	//EXECUTE stage
+	//ADC operation: adds (with carry) the operands stored in registers given in instruction
+	//if Immediate bit is high, then one of the operands is directly taken from the instruction
+	if(Immediate==0) 
+	{
+		printf("EXECUTE: ADD %d and %d\n",R[Operand1],R[Operand2]);
+		result=R[Operand1]+R[Operand2];
+	}
+	else 
+	{
+		printf("EXECUTE: ADD %d and %d\n",R[Operand1],Operand2);
+		result=R[Operand1]+Operand2;}
+}
 void Sub(){
 	//EXECUTE stage
 	//SUB operation: subtracts the operands stored in registers given in instruction
