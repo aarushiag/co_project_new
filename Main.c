@@ -10,7 +10,6 @@ static unsigned int instruction;
 static unsigned int current_address;
 static unsigned int PC=0;
 static unsigned int current_instruction;
-
 static unsigned int Condition;
 static unsigned int Flag;
 static unsigned int Immediate;
@@ -18,7 +17,7 @@ static unsigned int Opcode;
 static unsigned int Operand1;
 static unsigned int Operand2;
 static unsigned int Destination;
-
+static int register[15];
 
 void ReadFromFile() {
 	FILE *fp;
@@ -54,13 +53,20 @@ void ReadInstruction() {
 	printf("%d \n",Flag);
 }
 
-void decode() {
+void Decode() {
 	//current_instruction= 0xE3A0200A;
 	ReadInstruction();
 	
 }
+void Add(){
+	if (Immediate==0)register[Destination]=register[Operand1]+register[Operand2];
+	else register[Destination]=register[Operand1]+Operand2;
+}	
+void Sub(){
+	if (Immediate==0)register[Destination]=register[Operand1]-register[Operand2];
+	else register[Destination]=register[Operand1]-Operand2;
+}
 
-	
 void main() {
 	ReadFromFile();
 	Fetch();
