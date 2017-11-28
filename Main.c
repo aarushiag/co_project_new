@@ -44,15 +44,46 @@ void Fetch() {
 	PC+=4;
 }
 
-
 void ReadInstruction() {
 	//printf("%x",current_instruction);
 	Condition = (current_instruction >> 28) & (0b1111);
 	printf("%d \n",Condition);
 	Flag = (current_instruction >> 26) & (0b0011);
 	printf("%d \n",Flag);
-}
 
+    if(Flag==0)
+    {
+        Immediate=(current_instruction >> 25)& (0b0001);
+        Opcode=(current_instruction >> 21)& (0b1111);
+        Operand1=(current_instruction >> 16)& (0b1111);
+        Destination=(current_instruction >> 12)& (0b1111);
+
+        if(Immediate==0)
+        {
+            Operand2=(current_instruction)& (0b1111);
+        }
+
+        else if(Immediate==1)
+        {
+            Operand2=(current_instruction)& (0b11111111);
+        }
+    }
+
+    else if(Flag==1)
+    {
+        Opcode=(current_instruction >> 20)& (0b00111111);
+        Operand1 = ((current_instruction>>16)&(0b1111));
+        Operand2 = ((current_instruction)&(0b111111111111));
+        Destination = ((current_instruction>>12)&(0x1111));
+    }
+
+    else if (Flag==2)
+    {
+        Opcode = ((inst>>24)&(0b0011));
+        Offset = (inst&(0b111111111111111111111111));
+    }
+
+}
 void Decode() {
 	//current_instruction= 0xE3A0200A;
 	ReadInstruction();
