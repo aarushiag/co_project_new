@@ -199,37 +199,55 @@ void Decode() {
 void Add(){
 	if(Immediate==0) 
 	{
+		printf("EXECUTE: ADD %d and %d\n",R[Operand1],R[Operand2]);
 		R[Destination]=R[Operand1]+R[Operand2];
 	}
 	else 
-	{R[Destination]=R[Operand1]+Operand2;}
+	{
+		printf("EXECUTE: ADD %d and %d\n",R[Operand1],Operand2);
+		R[Destination]=R[Operand1]+Operand2;}
 }	
 void Sub(){
 	if(Immediate==0)
-	{R[Destination]=R[Operand1]-R[Operand2];}
+	{
+		printf("EXECUTE: SUB %d and %d\n",R[Operand1],R[Operand2]);
+		R[Destination]=R[Operand1]-R[Operand2];}
 	else 
-	{R[Destination]=R[Operand1]-Operand2;}
+	{
+		printf("EXECUTE: SUB %d and %d\n",R[Operand1],Operand2);
+		R[Destination]=R[Operand1]-Operand2;
+		}
 }
 void Mov(){
-	if(Immediate==0)
+	if(Immediate==0) {
+		printf("EXECUTE: MOV value of R%d in R%d\n,",Operand2,Destination);
 		R[Destination]=R[Operand2];
-	else
+	}
+	else {
+		printf("EXECUTE: MOV %d in R%d\n",Operand2,Destination);
 		R[Destination]=Operand2;
+	}
 }
 void Mnv(){
-	if(Immediate==0)
+	if(Immediate==0) {
+		printf("EXECUTE: MNV NOT of this R%d in R%d\n",Operand2,Destination);
 		R[Destination]=~R[Operand2];
-	else
+	}
+	else {
+		printf("EXECUTE: MNV NOT of %d in R%d\n",Operand2,Destination);
 		R[Destination]=~Operand2;
+	}
 }
 
 void And() {
 	if(Immediate==0)
 	{
+		printf("EXECUTE: AND %d and %d\n",R[Operand1],R[Operand2]);
 		R[Destination] = R[Operand1] & R[Operand2];
 	}
 	else
 	{
+		printf("EXECUTE: AND %d and %d\n",R[Operand1],Operand2);
 		R[Destination] = R[Operand1] & Operand2;
 	}
 }
@@ -237,11 +255,13 @@ void And() {
 void Or() {
 	if(Immediate==0)
 	{
+		printf("EXECUTE: ORR %d and %d\n",R[Operand1],R[Operand2]);
 		int or = R[Operand1] | R[Operand2];
 		R[Destination] = or;
 	}
 	else
 	{
+		printf("EXECUTE: ORR %d and %d\n",R[Operand1],Operand2);
 		int or = R[Operand1] | Operand2;
 		R[Destination] = or;
 	}
@@ -251,12 +271,10 @@ void Or() {
 void Execute() {
   
   if(Flag == 0)
-  {   
-      if(Immediate == 0)
-      {
+  { 
         if(Opcode == 0)
         {
-          printf("EXECUTE: AND %d and %d\n",R[Operand1],R[Operand2]);
+          
           And();
         }
         else if(Opcode == 1)
@@ -266,12 +284,12 @@ void Execute() {
         }
         else if(Opcode == 2)
         {
-          printf("EXECUTE: SUB %d and %d\n",R[Operand1],R[Operand2]);
+          
           Sub();
         }
         else if(Opcode == 4)
         {
-          printf("EXECUTE: ADD %d and %d\n",R[Operand1],R[Operand2]);
+          
           Add();
         }
         else if(Opcode == 5)
@@ -287,67 +305,17 @@ void Execute() {
         }
         else if(Opcode == 12)
         {
-          printf("EXECUTE: ORR %d and %d\n",R[Operand1],R[Operand2]);
           Or();
         }
         else if(Opcode == 13)
         {
-          printf("EXECUTE: MOV value of R%d in R%d\n,",Operand2,Destination);
           Mov();
         }
         else if(Opcode == 15)
         {
-          printf("EXECUTE: MNV NOT of this R%d in R%d\n",Operand2,Destination);
           Mnv();
         }
-      }
-      else if(Immediate == 1)
-      {
-        if(Opcode == 0)
-        {
-          printf("EXECUTE: AND %d and %d\n",R[Operand1],Operand2);
-          Add();
-        }
-        else if(Opcode == 1)
-        {
-          printf("EXECUTE: XOR %d and %d\n",R[Operand1],Operand2);
-          //CODE
-        }
-        else if(Opcode == 2){        
-          printf("EXECUTE: SUB %d and %d\n",R[Operand1],Operand2);
-          Sub();
-        }
-        else if(Opcode == 4)
-        {
-          printf("EXECUTE: ADD %d and %d\n",R[Operand1],Operand2);
-          Add();
-        }
-        else if(Opcode == 5)
-        {
-          printf("EXECUTE: ADC %d and %d\n",R[Operand1],Operand2);
-          //ADD
-        }
-        else if(Opcode == 10)
-        {
-          printf("EXECUTE: CMP %d and %d\n",R[Operand1],Operand2);
-          //CODE
-        }
-        else if(Opcode == 12)
-        {
-          printf("EXECUTE: ORR %d and %d\n",R[Operand1],Operand2);
-          Or();
-        }
-        else if(Opcode == 13)
-        {
-          printf("EXECUTE: MOV %d in R%d\n",Operand2,Destination);
-          Mov();
-        }
-        else if(Opcode == 15)
-        {
-          printf("EXECUTE: MNV NOT of %d in R%d\n",Operand2,Destination);
-          Mnv();
-        }
-      }
+      
     }
       
     }
