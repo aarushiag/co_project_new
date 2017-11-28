@@ -523,8 +523,8 @@ void WriteBack(){
 		}
 		else {
 			R[Destination]=result;
-			printf("%d\n",result);
-			printf("%s%d\n","WRITEBACK: Store value in R",Destination);
+			//printf("%d\n",result);
+			printf("%s %d %s%d\n","WRITEBACK: Store value",result,"in R",Destination);
 		}
 	}
 }
