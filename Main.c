@@ -236,12 +236,12 @@ void Adc(){
 	//if Immediate bit is high, then one of the operands is directly taken from the instruction
 	if(Immediate==0) 
 	{
-		printf("EXECUTE: ADD %d and %d\n",R[Operand1],R[Operand2]);
+		printf("EXECUTE: ADD WITH CARRY %d and %d\n",R[Operand1],R[Operand2]);
 		result=R[Operand1]+R[Operand2];
 	}
 	else 
 	{
-		printf("EXECUTE: ADD %d and %d\n",R[Operand1],Operand2);
+		printf("EXECUTE: ADD WITH CARRY %d and %d\n",R[Operand1],Operand2);
 		result=R[Operand1]+Operand2;}
 }
 void Sub(){
@@ -271,16 +271,16 @@ void Mov(){
 		result=Operand2;
 	}
 }
-void Mnv(){
+void Mvn(){
 	//EXECUTE stage
 	//MNV operation: moves the bitwise NOT of the value stored in one of operand registers to the other one
 	//if Immediate bit is high, then one of the operands is directly taken from the instruction
 	if(Immediate==0) {
-		printf("EXECUTE: MNV NOT of this R%d in R%d\n",Operand2,Destination);
+		printf("EXECUTE: MVN NOT of this R%d in R%d\n",Operand2,Destination);
 		result=~R[Operand2];
 	}
 	else {
-		printf("EXECUTE: MNV NOT of %d in R%d\n",Operand2,Destination);
+		printf("EXECUTE: MVN NOT of %d in R%d\n",Operand2,Destination);
 		result=~Operand2;
 	}
 }
@@ -437,7 +437,7 @@ void Execute() {
         }
         else if(Opcode == 5)
         {
-          printf("EXECUTE: ADC %d and %d\n",R[Operand1],R[Operand2]);
+          Adc();
         }
         else if(Opcode == 10)
         {
@@ -453,7 +453,7 @@ void Execute() {
         }
         else if(Opcode == 15)
         {
-          Mnv();
+          Mvn();
         }
       
     }
