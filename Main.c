@@ -80,7 +80,8 @@ void ReadInstruction() {
         Opcode=(current_instruction >> 20)& (0b00111111);
         Operand1 = ((current_instruction>>16)&(0b1111));
         Operand2 = ((current_instruction)&(0b111111111111));
-        Destination = ((current_instruction>>12)&(0x1111));
+        Destination = ((current_instruction>>12)&(0b1111));
+		
     }
 
     else if (Flag==2)
@@ -132,31 +133,31 @@ void Decode() {
       else if(Immediate==1){
         
         if(Opcode==0) {
-			  printf("DECODE: Operation is AND, First Operand is R%d, Second Operand is R%d, Destination register is R%d.\nRead Rs: R%d = %d, R%d = %d\n",Operand1,Operand2,Destination,Operand1,R[Operand1],Operand2,R[Operand2]);
+			  printf("DECODE: Operation is AND, First Operand is R%d, Immediate Second Operand is %d, Destination register is R%d.\nRead Rs: R%d = %d\n",Operand1,Operand2,Destination,Operand1,R[Operand1]);
 			}
 			else if(Opcode==1) {
-				printf("DECODE: Operation is XOR, First Operand is R%d, Second Operand is R%d, Destination register is R%d.\nRead Rs: R%d = %d, R%d = %d\n",Operand1,Operand2,Destination,Operand1,R[Operand1],Operand2,R[Operand2]);
+				printf("DECODE: Operation is XOR, First Operand is R%d, Immediate Second Operand is %d, Destination register is R%d.\nRead Rs: R%d = %d\n",Operand1,Operand2,Destination,Operand1,R[Operand1]);
 			}
 			else if(Opcode==2) {
-				printf("DECODE: Operation is SUB, First Operand is R%d, Second Operand is R%d, Destination register is R%d.\nRead Rs: R%d = %d, R%d = %d\n",Operand1,Operand2,Destination,Operand1,R[Operand1],Operand2,R[Operand2]);
+				printf("DECODE: Operation is SUB, First Operand is R%d, Immediate Second Operand is %d, Destination register is R%d.\nRead Rs: R%d = %d\n",Operand1,Operand2,Destination,Operand1,R[Operand1]);
 			}
 			else if(Opcode==4) {
-				printf("DECODE: Operation is ADD, First Operand is R%d, Second Operand is R%d, Destination register is R%d.\nRead Rs: R%d = %d, R%d = %d\n",Operand1,Operand2,Destination,Operand1,R[Operand1],Operand2,R[Operand2]);
+				printf("DECODE: Operation is ADD, First Operand is R%d, Immediate Second Operand is %d, Destination register is R%d.\nRead Rs: R%d = %d\n",Operand1,Operand2,Destination,Operand1,R[Operand1]);
 			}
 			else if(Opcode==5) {
-				printf("DECODE: Operation is ADC, First Operand is R%d, Second Operand is R%d, Destination register is R%d.\nRead Rs: R%d = %d, R%d = %d\n",Operand1,Operand2,Destination,Operand1,R[Operand1],Operand2,R[Operand2]);
+				printf("DECODE: Operation is ADC, First Operand is R%d, Immediate Second Operand is %d, Destination register is R%d.\nRead Rs: R%d = %d\n",Operand1,Operand2,Destination,Operand1,R[Operand1]);
 			}
 			else if(Opcode==10) {
-				printf("DECODE: Operation is CMP, First Operand is R%d, Second Operand is R%d, Destination register is R%d.\nRead Rs: R%d = %d, R%d = %d\n",Operand1,Operand2,Destination,Operand1,R[Operand1],Operand2,R[Operand2]);
+				printf("DECODE: Operation is CMP, First Operand is R%d, Immediate Second Operand is %d, Destination register is R%d.\nRead Rs: R%d = %d\n",Operand1,Operand2,Destination,Operand1,R[Operand1]);
 			}
 			else if(Opcode==12) {
-				printf("DECODE: Operation is ORR, First Operand is R%d, Second Operand is R%d, Destination register is R%d.\nRead Rs: R%d = %d, R%d = %d\n",Operand1,Operand2,Destination,Operand1,R[Operand1],Operand2,R[Operand2]);
+				printf("DECODE: Operation is ORR,First Operand is R%d, Immediate Second Operand is %d, Destination register is R%d.\nRead Rs: R%d = %d\n",Operand1,Operand2,Destination,Operand1,R[Operand1]);
 			}
 			else if(Opcode==13) {
-				printf("DECODE: Operation is MOV, First Operand is R%d, Immediate Second Operand is R%d, Destination register is R%d.\nRead Rs: R%d = %d, R%d = %d\n",Operand1,Operand2,Destination,Operand1,R[Operand1],Operand2,R[Operand2]);
+				printf("DECODE: Operation is MOV,First Operand is R%d, Immediate Second Operand is %d, Destination register is R%d.\nRead Rs: R%d = %d\n",Operand1,Operand2,Destination,Operand1,R[Operand1]);
 			}
 			else if(Opcode==15) {
-				printf("DECODE: Operation is MNV, First Operand is R%d, Second Operand is R%d, Destination register is R%d.\nRead Rs: R%d = %d, R%d = %d\n",Operand1,Operand2,Destination,Operand1,R[Operand1],Operand2,R[Operand2]);
+				printf("DECODE: Operation is MNV, First Operand is R%d, Immediate Second Operand is %d, Destination register is R%d.\nRead Rs: R%d = %d\n",Operand1,Operand2,Destination,Operand1,R[Operand1]);
 			}
 
       }
@@ -170,7 +171,7 @@ void Decode() {
       }
       else if(Opcode==24)
       {
-        printf("DECODE: Operation is STR, Base Register is R%d, Offset is %d, Register to be stored in memory is R%d.\n,Read Register: R%d = %d\n",Operand1,Operand2,Destination,Destination,R[Destination]);
+        printf("DECODE: Operation is STR, Base Register is R%d, Offset is %d, Register to be stored in memory is R%d.\nRead Register: R%d = %d\n",Operand1,Operand2,Destination,Destination,R[Destination]);
       }
   }
   else if(Flag==2)
@@ -527,9 +528,7 @@ void WriteBack(){
 			printf("%s %d %s%d\n","WRITEBACK: Store value",result,"in R",Destination);
 		}
 	}
-}
-
-	
+}	
 	
 void main() {
 	
