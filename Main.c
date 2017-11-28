@@ -66,7 +66,12 @@ void Sub(){
 	if (Immediate==0)register[Destination]=register[Operand1]-register[Operand2];
 	else register[Destination]=register[Operand1]-Operand2;
 }
-
+void Mov(){
+	register[Destination]=register[Operand1];
+}
+void Mnv(){
+	register[Destination]=~register[Operand1];
+}
 void main() {
 	ReadFromFile();
 	Fetch();
