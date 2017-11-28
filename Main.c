@@ -32,6 +32,7 @@ void ReadFromFile() {
 void Fetch() {
 	current_address=PC;
 	current_instruction=MEM[PC];
+	printf("%s %x %s %x","Fetching instruction ",current_instruction," from address ",current_address);
 	PC+=4;
 }
 	
@@ -41,7 +42,7 @@ void main() {
 	int ct=0;
 	if (flag==0){
 	while(ct<4){
-		//Fetch();
+		Fetch();
 		ct++;
 	}
 	}
