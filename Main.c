@@ -9,9 +9,9 @@ static unsigned int instruction;
 static unsigned int current_address;
 //PC is for program counter
 static unsigned int PC=0;
-//current_instruction stores the current instruction being executed 
+//current_instruction stores the current instruction being executed
 static unsigned int current_instruction;
-//Condiiton, Flag, Immediate and Opcode are for identifying the type of instruction and the operation 
+//Condiiton, Flag, Immediate and Opcode are for identifying the type of instruction and the operation
 //to be performed on the operands Operand1 and Operand2
 static unsigned int Condition;
 static unsigned int Flag;
@@ -41,7 +41,7 @@ void ReadFromFile() {
 	//Reads the .MEM file to obtain the instructions required for executing the program
 	FILE *fp;
 	fp=fopen("Input.mem","r");
-	
+
 	if(fp == NULL) {
 		printf("Error opening file for writing\n");
 		return;
@@ -50,12 +50,12 @@ void ReadFromFile() {
 	while(fscanf(fp,"%x %x",&address,&instruction)!=EOF){
 		program_sequence[address]=instruction;
 	}
-	
+
 	fclose(fp);
 }
 
 void Fetch() {
-	//FETCH stage: gets the next instruction to be executed using program counter as the index 
+	//FETCH stage: gets the next instruction to be executed using program counter as the index
 	//increments the program counter to point to the next instruction
 	current_address=PC;
 	current_instruction=program_sequence[PC];
@@ -65,7 +65,7 @@ void Fetch() {
 
 void ReadInstruction() {
 	//DECODE stage
-	//parses the instruction to find the Condition, Flag, Immediate, Opcode and operands 
+	//parses the instruction to find the Condition, Flag, Immediate, Opcode and operands
 	//for the instruction currently being decoded
 	Condition = (current_instruction >> 28) & (0b1111);
 	Flag = (current_instruction >> 26) & (0b0011);
@@ -94,7 +94,7 @@ void ReadInstruction() {
         Operand1 = ((current_instruction>>16)&(0b1111));
         Operand2 = ((current_instruction)&(0b111111111111));
         Destination = ((current_instruction>>12)&(0b1111));
-		
+
     }
 
     else if (Flag==2)
@@ -112,7 +112,7 @@ void Decode() {
 	if(Flag==0)
 	{
 		if(Immediate==0){
-        
+
 			if(Opcode==0) {
 			  printf("DECODE: Operation is AND, First Operand is R%d, Second Operand is R%d, Destination register is R%d.\nRead Rs: R%d = %d, R%d = %d\n",Operand1,Operand2,Destination,Operand1,reg[Operand1],Operand2,reg[Operand2]);
 			}
@@ -144,7 +144,7 @@ void Decode() {
       }
 
       else if(Immediate==1){
-        
+
         if(Opcode==0) {
 			  printf("DECODE: Operation is AND, First Operand is R%d, Immediate Second Operand is %d, Destination register is R%d.\nRead Rs: R%d = %d\n",Operand1,Operand2,Destination,Operand1,reg[Operand1]);
 			}
@@ -213,33 +213,33 @@ void Decode() {
 	  }
     }
   }
-	
+
 }
 
 void Add(){
 	//EXECUTE stage
 	//ADD operation: adds the operands stored in registers given in instruction
 	//if Immediate bit is high, then one of the operands is directly taken from the instruction
-	if(Immediate==0) 
+	if(Immediate==0)
 	{
 		printf("EXECUTE: ADD %d and %d\n",reg[Operand1],reg[Operand2]);
 		final_val=reg[Operand1]+reg[Operand2];
 	}
-	else 
+	else
 	{
 		printf("EXECUTE: ADD %d and %d\n",reg[Operand1],Operand2);
 		final_val=reg[Operand1]+Operand2;}
-}	
+}
 void Adc(){
 	//EXECUTE stage
 	//ADC operation: adds (with carry) the operands stored in registers given in instruction
 	//if Immediate bit is high, then one of the operands is directly taken from the instruction
-	if(Immediate==0) 
+	if(Immediate==0)
 	{
 		printf("EXECUTE: ADD WITH CARRY %d and %d\n",reg[Operand1],reg[Operand2]);
 		final_val=reg[Operand1]+reg[Operand2];
 	}
-	else 
+	else
 	{
 		printf("EXECUTE: ADD WITH CARRY %d and %d\n",reg[Operand1],Operand2);
 		final_val=reg[Operand1]+Operand2;}
@@ -252,7 +252,7 @@ void Sub(){
 	{
 		printf("EXECUTE: SUB %d and %d\n",reg[Operand1],reg[Operand2]);
 		final_val=reg[Operand1]-reg[Operand2];}
-	else 
+	else
 	{
 		printf("EXECUTE: SUB %d and %d\n",reg[Operand1],Operand2);
 		final_val=reg[Operand1]-Operand2;
@@ -417,10 +417,10 @@ void Store(){
 void Execute() {
   //EXECUTE stage: calls the appropriate method to perform the required operation on the operation based on opcode
   if(Flag == 0)
-  { 
+  {
         if(Opcode == 0)
         {
-          
+
           And();
         }
         else if(Opcode == 1)
@@ -455,7 +455,7 @@ void Execute() {
         {
           Mvn();
         }
-      
+
     }
 	else if(Flag==1)
 	{
@@ -545,9 +545,9 @@ void Execute() {
     }
 
     }
-      
+
 }
-	
+
 void Memory() {
 	//MEMORY stage: to either load a value or store a value from the memory
 	if(Flag==1)
@@ -564,7 +564,7 @@ void Memory() {
 	else
 	{
 		printf("%s \n","MEMORY: No Memory Operation");
-	}		
+	}
 }
 
 void WriteBackForStore(){
@@ -574,7 +574,7 @@ void WriteBackForStore(){
 	int index=Operand2/4;
 	array_of_registers[Operand1][index]=stored_value;
 	printf("%s%d %s %d\n","WRITEBACK: Store value in array R",Operand1," at index ",index);
-}	
+}
 
 void WriteBack(){
 	//WRITEBACK stage: stores the results of the operations performed to registers or to the memory according to the instruction
@@ -588,18 +588,48 @@ void WriteBack(){
 			printf("%s %d %s%d\n","WRITEBACK: Store value",final_val,"in R",Destination);
 		}
 	}
-}	
-	
+}
+
 void main() {
 	//MAIN function to run the program
 	ReadFromFile();
-	
+
 	do {
 		Fetch();
-		Decode();
+		if (current_instruction == 0xEF00006B)
+        {
+           printf("%s %d","Printing the value in R1 :-",reg[1]);
+           printf("\n");
+        }
+
+        else if (current_instruction == 0xEF000000)
+        {
+           printf("%s %s","Printing the value in R0 :-",reg[1]);
+           printf("\n");
+        }
+        else if (current_instruction == 0xEF00006A)
+        {
+            printf("%s","Please enter the input string");
+            char *a;
+            gets(a);
+	   printf("\n");
+	    
+        }
+        else if(current_instruction == 0xEF00006C)
+        {
+            printf("%s","Please enter the input integer ");
+            int a;
+            scanf("%d",&a);
+            reg[0]=a;
+
+        }
+        else
+        {
+       	        Decode();
 		Execute();
 		Memory();
 		WriteBack();
+        }
 		printf("\n");
 	}while(current_instruction != 0xEF000011);
 	printf("%s\n","EXIT:");
