@@ -29,7 +29,7 @@ static unsigned int Destination;
 //R acts as registers for ARMSIM
 static unsigned int reg[16];
 //result stores the intermediate result obtained after EXECUTE stage
-static unsigned int final_value;
+static unsigned int final_val;
 static unsigned int stored_value;
 static unsigned int Z;
 static unsigned int N;
@@ -40,7 +40,7 @@ void ReadFromFile() {
 	//FETCH stage
 	//Reads the .MEM file to obtain the instructions required for executing the program
 	FILE *fp;
-	fp=fopen("Input.txt","r");
+	fp=fopen("Input.mem","r");
 	
 	if(fp == NULL) {
 		printf("Error opening file for writing\n");
@@ -399,7 +399,7 @@ void Ldr(){
 	//EXECUTE stage
 	//LDR operation: loads the value stored in a memory location to a register
 	int index=Operand2/4;
-	result=array_of_registers[Operand1][index];
+	final_val=array_of_registers[Operand1][index];
 	//load value from memory location to register
 	printf("%s%d %s %d\n","EXECUTE: LOAD instruction from array R",Operand1," index ",index);
 }
